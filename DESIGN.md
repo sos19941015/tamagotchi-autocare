@@ -1,81 +1,73 @@
 ---
-name: Cyber Nostalgia
-version: "alpha"
+name: 8-Bit Material (M3 Pixel)
+version: "1.0"
 colors:
-  primary: "#FF007F"
+  primary: "#D81B60"
   on-primary: "#FFFFFF"
-  secondary: "#00F0FF"
-  on-secondary: "#000000"
-  background: "#09090B"
-  surface: "rgba(20, 20, 25, 0.65)"
-  outline: "#3F3F46"
-  surface-highlight: "rgba(255, 0, 127, 0.15)"
-  text-primary: "#F4F4F5"
-  text-secondary: "#A1A1AA"
+  primary-container: "#FCE4EC"
+  on-primary-container: "#880E4F"
+  background: "#E0F7FA"
+  surface: "#FFFFFF"
+  outline: "#1E1E1E"
+  surface-variant: "#F5F5F5"
 typography:
   headline:
-    fontFamily: "'Outfit', sans-serif"
-    fontSize: "1.25rem"
-    fontWeight: 700
-    letterSpacing: "-0.02em"
+    fontFamily: "'Press Start 2P', cursive"
+    fontSize: "0.85rem"
+    lineHeight: "1.5"
   body:
-    fontFamily: "'Roboto', sans-serif"
-    fontSize: "0.9rem"
+    fontFamily: "'Outfit', sans-serif"
+    fontSize: "0.95rem"
     fontWeight: 500
   label:
-    fontFamily: "'Outfit', sans-serif"
-    fontSize: "0.75rem"
-    fontWeight: 700
-    letterSpacing: "0.1em"
+    fontFamily: "'Press Start 2P', cursive"
+    fontSize: "0.6rem"
 rounded:
-  sm: "12px"
-  md: "16px"
-  lg: "32px"
-spacing:
   sm: "8px"
   md: "12px"
+  lg: "24px"
+spacing:
+  sm: "8px"
+  md: "16px"
   lg: "24px"
 components:
   panel:
     backgroundColor: "{colors.surface}"
     rounded: "{rounded.lg}"
     padding: "{spacing.lg}"
+    border: "3px solid {colors.outline}"
+    shadow: "6px 6px 0px {colors.outline}"
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     rounded: "{rounded.md}"
-  button-secondary:
-    backgroundColor: "transparent"
-    textColor: "{colors.secondary}"
+    border: "2px solid {colors.outline}"
+    shadow: "3px 3px 0px {colors.outline}"
+  button-tonal:
+    backgroundColor: "{colors.primary-container}"
+    textColor: "{colors.on-primary-container}"
     rounded: "{rounded.md}"
+    border: "2px solid {colors.outline}"
+    shadow: "3px 3px 0px {colors.outline}"
 ---
 
 ## Overview
 
-Cyber Nostalgia blends 90s digital aesthetics with modern glassmorphism. It uses a deep, immersive dark mode punctuated by vibrant neon pink and cyan, evoking the feeling of a high-tech retro-futuristic laboratory.
+8-Bit Material combines the structured layout and tonal logic of Google's Material Design 3 (M3) with the nostalgic, high-contrast aesthetics of 8-bit retro gaming. 
 
 ## Colors
 
-The palette is rooted in a deep cyber void with striking neon accents.
-
-- **Primary (#FF007F):** Neon pink for primary actions, toggles, and active states.
-- **Secondary (#00F0FF):** Cyber cyan for secondary actions and data visualization.
-- **Background (#09090B):** Void black, creating infinite depth.
-- **Surface:** Frosted dark glass for containment panels.
+The palette uses bright, playful M3 colors (like deep pinks and light cyans) but replaces soft shadows with thick, high-contrast `#1E1E1E` black borders to simulate pixel art.
 
 ## Typography
 
-- **Outfit:** Used for sharp, geometric headlines and labels, giving a futuristic digital feel.
-- **Roboto:** Used for readable body text and precise data readouts.
+- **Press Start 2P:** Used for headlines, badges, and labels to instantly deliver the retro 8-bit vibe.
+- **Outfit:** Used for body text and numbers to ensure readability without breaking the playful M3 geometry.
 
 ## Layout & Spacing
 
-Components are well-separated using large spacing tokens to emphasize the premium, uncrowded glass interface.
+Maintains M3's generous padding and rounded corners (`24px` for cards, `12px` for buttons), creating a unique "rounded pixel" feel.
 
 ## Elevation
 
-Elevation is achieved through blur (`backdrop-filter`) and vibrant colored glows rather than traditional drop shadows. Panels emit a subtle neon glow when active.
-
-## Shapes
-
-Corners are heavily rounded to contrast the harshness of the neon colors with soft, organic hardware-like shapes.
+Soft drop shadows are completely removed. Elevation is achieved exclusively through **Hard Offset Shadows** (e.g., `6px 6px 0px #1E1E1E`), mimicking retro 2D isometric depth.
