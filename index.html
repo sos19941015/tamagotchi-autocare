@@ -17,10 +17,15 @@
   <script>
     (function(){
       const _W = window.Worker;
-      window.Worker = function(...a){
-        // Ensure worker path is relative to base
-        if (typeof a[0] === 'string' && a[0].startsWith('/assets/')) a[0] = '.' + a[0];
-        const w = new _W(...a);
+      window.Worker = function(script, options){
+        let url = script;
+        if (typeof script === 'string' && script.startsWith('/assets/')) {
+          url = '.' + script;
+        } else if (script instanceof URL && script.pathname.startsWith('/assets/')) {
+          // Fix for URL objects in minified code
+          url = new URL('.' + script.pathname, script.origin);
+        }
+        const w = new _W(url, options);
         window.tamaWorker = w;
         return w;
       };
