@@ -145,6 +145,16 @@ Tamagotchi 的形態進化是由照顧品質決定的：
 
 ---
 
+## 🙏 致謝 (Acknowledgments)
+
+本專案的成功建立在以下優秀開源專案的基礎之上：
+
+*   **[tamagotchi-p1-web](https://github.com/gh-god/tamagotchi-p1-web)**：提供了核心的 WASM 模擬器引擎與基礎框架。
+*   **Pygotchi**：啟發了自動化照顧邏輯與 CareBot 的行為設計。
+*   **Google Material Design 3**：提供了現代化且優雅的設計規範。
+
+---
+
 ## 📜 授權
 
 本專案僅供學習與技術研究使用。Tamagotchi 商標與原始資源版權歸 Bandai 所有。
