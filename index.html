@@ -82,11 +82,12 @@
 
     /* ── Emulator ── */
     #root {
-      transform: scale(0.75);
+      --zoom: 1;
+      transform: scale(var(--zoom));
+      transform-origin: center top;
       filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.2s;
     }
-    #root:hover { transform: scale(0.78); }
 
     /* ── Premium Glass Panel ── */
     #panel {
@@ -349,6 +350,18 @@
              oninput="window.setSpeed(+this.value)">
     </div>
 
+    <!-- Group: Zoom Slider -->
+    <div class="slider-box">
+      <div class="slider-header">
+        <div style="display:flex; align-items:center; gap:8px">
+          <span class="material-icons-round">zoom_in</span> Emulator Zoom
+        </div>
+        <span id="zoomLabel" style="color:var(--primary)">100%</span>
+      </div>
+      <input type="range" id="zoomSlider" min="50" max="150" value="100"
+             oninput="window.setZoom(+this.value)">
+    </div>
+
   </div>
 </div>
 
@@ -371,6 +384,11 @@ window.setSpeed = function(v) {
   document.getElementById('speedLabel').innerText = v + '×';
   if (window.turboActive && window.tamaWorker)
     window.tamaWorker.postMessage({ type:'speed', value: v });
+};
+
+window.setZoom = function(v) {
+  document.getElementById('zoomLabel').innerText = v + '%';
+  document.getElementById('root').style.setProperty('--zoom', v / 100);
 };
 
 window.toggleAuto = function() {
