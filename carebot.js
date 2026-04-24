@@ -198,12 +198,9 @@ function getDelay(action) {
 }
 
 function hackClick(label) {
-    const btns = document.querySelectorAll('#root button');
-    const map = { A: 0, B: 1, C: 2 };
-    const idx = map[label];
-    if (btns[idx]) {
-        btns[idx].dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-        setTimeout(() => btns[idx].dispatchEvent(new MouseEvent('mouseup', { bubbles: true })), 80);
+    if (window.tamaWorker) {
+        window.tamaWorker.postMessage({ button: label, pressed: true });
+        setTimeout(() => window.tamaWorker.postMessage({ button: label, pressed: false }), 80);
     }
 }
 
@@ -255,6 +252,20 @@ function runBot() {
         return;
     }
 
+    // State completion checks
+    if (window.botState.doing === 'try_to_clean') {
+        if (isDirtyTop(m)) {
+            // Still dirty after trying to clean? The Tamagotchi must be asleep,
+            // but the double poop was hiding the Zs! Turn the light off.
+            updateBadge('POOP HID Zs! LIGHT OFF', '#a7f3d0');
+            window.botState.doing = '';
+            window.botState.stats = { hunger: 4, happiness: 4 };
+            enqueue(ACTIONS.light());
+            return;
+        }
+        window.botState.doing = '';
+    }
+
     // Dark = all pixels on = light off, pet is not asleep
     if (isDark(m)) {
         updateBadge('DARK→LIGHT', '#c4b5fd');
@@ -279,6 +290,7 @@ function runBot() {
     // Dirty (top priority after sleep)
     if (isDirtyTop(m)) {
         updateBadge('CLEANING', '#bae6fd');
+        window.botState.doing = 'try_to_clean';
         enqueue(ACTIONS.clean());
         return;
     }
