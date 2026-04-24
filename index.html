@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tamagotchi AutoCare</title>
+  <!-- Intercept Worker BEFORE emulator loads to capture tamaWorker reference -->
+  <script>
+    (function(){
+      const _W = window.Worker;
+      window.Worker = function(...a){ const w = new _W(...a); window.tamaWorker = w; return w; };
+      window.Worker.prototype = _W.prototype;
+    })();
+  </script>
+  <script type="module" crossorigin src="./assets/index-DWrRXlW6.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-D8LpgUKF.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #F6F8FC;
+      --surface:   rgba(255, 255, 255, 0.7);
+      --primary:   #6750A4;
+      --on-pri:    #FFFFFF;
+      --pri-cnt:   #EADDFF;
+      --on-pri-c:  #21005D;
+      --sec:       #625B71;
+      --ter:       #7D5260;
+      --outline:   #79747E;
+      --surf-hi:   rgba(232, 222, 248, 0.5);
+      --on-surf:   #1C1B1F;
+      --shadow:    0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&family=Roboto:wght@400;500&display=swap');
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                        radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                        radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+      background-attachment: fixed;
+      font-family: 'Outfit', sans-serif;
+      color: var(--on-surf);
+      overflow: hidden;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 24px;
+      padding: 20px;
+    }
+
+    /* ── Emulator ── */
+    #root {
+      transform: scale(0.85);
+      filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #root:hover { transform: scale(0.88); }
+
+    /* ── Premium Glass Panel ── */
+    #panel {
+      width: 520px;
+      max-width: 100%;
+      background: var(--surface);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Header Row */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: var(--pri-cnt);
+      color: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .brand-text { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; color: var(--on-surf); }
+
+    #statusBadge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: var(--surf-hi);
+      color: var(--primary);
+      border: 1px solid rgba(103, 80, 164, 0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Control Groups */
+    .group-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--outline);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Modern Buttons */
+    .m3-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .m3-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .m3-btn:active { transform: translateY(0); }
+
+    .btn-filled { background: var(--primary); color: var(--on-pri); }
+    .btn-tonal  { background: var(--pri-cnt); color: var(--on-pri-c); }
+    .btn-outlined { background: transparent; border: 1px solid var(--outline); color: var(--primary); }
+    .btn-icon-only { width: 44px; padding: 0; }
+
+    /* Toggle Switches Container */
+    .toggles-card {
+      background: rgba(255,255,255,0.4);
+      border-radius: 20px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 20px;
+    }
+    .toggle-unit {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* M3 Switch */
+    .m3-switch { position: relative; width: 52px; height: 32px; cursor: pointer; }
+    .m3-switch input { opacity:0; width:0; height:0; }
+    .sw-track {
+      position: absolute; inset: 0;
+      border-radius: 16px;
+      background: #E7E0EC;
+      border: 2px solid var(--outline);
+      transition: all 0.2s;
+    }
+    .sw-handle {
+      position: absolute;
+      top: 50%; left: 6px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--outline);
+      transform: translateY(-50%);
+      transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .m3-switch input:checked ~ .sw-track { background: var(--primary); border-color: var(--primary); }
+    .m3-switch input:checked ~ .sw-handle {
+      left: 24px; width: 22px; height: 22px;
+      background: var(--on-pri);
+    }
+
+    /* Slider Group */
+    .slider-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .slider-header .material-icons-round { color: var(--primary); }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #E7E0EC;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px; height: 24px;
+      background: var(--primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.1s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+    /* Icons Animation */
+    .heart-on { color: #FF4081 !important; animation: beat 0.8s infinite; }
+    .turbo-on { color: #FFD600 !important; animation: flicker 1s infinite; }
+    @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Emulator -->
+  <div id="root"></div>
+
+  <!-- Dashboard Panel -->
+  <div id="panel">
+    
+    <!-- Header -->
+    <div class="panel-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <span class="material-icons-round">settings_input_component</span>
+        </div>
+        <div class="brand-text">AutoCare Dashboard</div>
+      </div>
+      <div id="statusBadge">IDLE</div>
+    </div>
+
+    <!-- Group: Bot Config -->
+    <div class="toggles-card">
+      <div class="toggle-unit">
+        <span class="material-icons-round" id="heartIcon">favorite_border</span>
+        <span>Auto Pilot</span>
+        <label class="m3-switch">
+          <input type="checkbox" id="autoCheck" onchange="window.toggleAuto()">
+          <div class="sw-track"></div>
+          <div class="sw-handle"></div>
+        </label>
+      </div>
+      <div class="toggle-unit">
+        <span class="material-icons-round" id="turboIcon">bolt</span>
+        <span>Turbo Mode</span>
+        <label class="m3-switch">
+          <input type="checkbox" id="turboCheck" onchange="window.toggleTurbo()">
+          <div class="sw-track"></div>
+          <div class="sw-handle"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Group: Manual Actions -->
+    <div>
+      <div class="group-label">System Operations</div>
+      <div class="action-row">
+        <button class="m3-btn btn-filled" onclick="window.manualSync()">
+          <span class="material-icons-round">sync</span> Sync Time
+        </button>
+        <button class="m3-btn btn-tonal" onclick="window.pressAC()">
+          <span class="material-icons-round">touch_app</span> A+C
+        </button>
+        <button class="m3-btn btn-tonal btn-icon-only" onclick="window.saveState()" title="Save State">
+          <span class="material-icons-round">save</span>
+        </button>
+        <button class="m3-btn btn-tonal btn-icon-only" onclick="document.getElementById('fileInput').click()" title="Load State">
+          <span class="material-icons-round">file_open</span>
+        </button>
+        <button class="m3-btn btn-outlined btn-icon-only" style="border-color:#FFDAD6; color:#B3261E" onclick="window.resetCPU()" title="Reset">
+          <span class="material-icons-round">restart_alt</span>
+        </button>
+      </div>
+      <input type="file" id="fileInput" accept=".json" style="display:none" onchange="window.loadState(event)">
+    </div>
+
+    <!-- Group: Speed Slider -->
+    <div class="slider-box">
+      <div class="slider-header">
+        <div style="display:flex; align-items:center; gap:8px">
+          <span class="material-icons-round">speed</span> Simulation Speed
+        </div>
+        <span id="speedLabel" style="color:var(--primary)">10×</span>
+      </div>
+      <input type="range" id="speedSlider" min="2" max="100" value="10"
+             oninput="window.setSpeed(+this.value)">
+    </div>
+
+  </div>
+</div>
+
+<script src="./carebot.js"></script>
+<script>
+window.turboActive       = false;
+window.currentMultiplier = 10;
+
+window.pressAC = () => ['A','C'].forEach(k => window.hackClick(k));
+
+window.toggleTurbo = function() {
+  window.turboActive = document.getElementById('turboCheck').checked;
+  document.getElementById('turboIcon').classList.toggle('turbo-on', window.turboActive);
+  const v = window.turboActive ? window.currentMultiplier : 1;
+  if (window.tamaWorker) window.tamaWorker.postMessage({ type:'speed', value: v });
+};
+
+window.setSpeed = function(v) {
+  window.currentMultiplier = v;
+  document.getElementById('speedLabel').innerText = v + '×';
+  if (window.turboActive && window.tamaWorker)
+    window.tamaWorker.postMessage({ type:'speed', value: v });
+};
+
+window.toggleAuto = function() {
+  window.botActive = document.getElementById('autoCheck').checked;
+  const icon = document.getElementById('heartIcon');
+  if (window.botActive) {
+    icon.classList.add('heart-on');
+    window.botState = {
+      dead:false, doing:'', egg:true,
+      stats:{hunger:4, happiness:4},
+      scold:false, nextCheck:0, feedSide:'top'
+    };
+    window.botInterval = setInterval(window.runBot, 2000);
+    window.runBot();
+  } else {
+    icon.classList.remove('heart-on');
+    clearInterval(window.botInterval);
+    window.botQueue   = [];
+    window.botRunning = false;
+    window.updateBadge('IDLE', 'transparent');
+  }
+};
+
+window.manualSync = async function() {
+  const now  = new Date();
+  const hr   = now.getHours();
+  const mn   = now.getMinutes();
+  const sec  = now.getSeconds();
+  window.updateBadge('SYNCING…', '#90CAF9');
+
+  // 1. Force save current state
+  if (window.tamaWorker) window.tamaWorker.postMessage('save');
+  await new Promise(r => setTimeout(r, 800));
+
+  // 2. Read from IndexedDB
+  const db = await new Promise((res,rej) => {
+    const req = indexedDB.open('TamaDB', 1);
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+  const record = await new Promise((res,rej) => {
+    const req = db.transaction(['states'],'readonly')
+                  .objectStore('states').get('tamaState');
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+  if (!record?.buffer) { db.close(); window.updateBadge('SYNC ERR','#F48FB1'); return; }
+
+  // 3. Patch clock starting at byte 92 — BCD: [sec, min, hr, 0]
+  const toBCD = d => ((Math.floor(d/10) << 4) | (d % 10));
+  const raw = record.buffer instanceof Uint32Array ? record.buffer.buffer : record.buffer;
+  const bytes = new Uint8Array(raw);
+  
+  // tamalib layout: 93=sec(BCD), 94=min(BCD), 95=hour(Binary 0-23)
+  bytes[93] = toBCD(sec);
+  bytes[94] = toBCD(mn);
+  bytes[95] = hr; // Binary hour!
+  
+  const buffer = new Uint32Array(bytes.buffer);
+
+  // 4. Write back
+  await new Promise((res,rej) => {
+    const req = db.transaction(['states'],'readwrite')
+                  .objectStore('states').put({ id:'tamaState', buffer });
+    req.onsuccess = () => res();
+    req.onerror   = () => rej(req.error);
+  });
+  db.close();
+
+  // 5. Tell worker to reload patched state
+  if (window.tamaWorker) window.tamaWorker.postMessage('load');
+  window.updateBadge(`SYNCED ${hr}:${String(mn).padStart(2,'0')}`, '#A5D6A7');
+};
+
+window.resetCPU = function() {
+  if (!confirm('重置電子雞？進度將遺失！')) return;
+  window.botActive = false;
+  clearInterval(window.botInterval);
+  window.botQueue   = [];
+  window.botRunning = false;
+  ['TamaDB','tamagotchi-db'].forEach(n => indexedDB.deleteDatabase(n));
+  localStorage.clear();
+  location.reload();
+};
+
+// ── Save: 觸發 Worker 存檔，然後把 IndexedDB 匯出成 JSON 下載 ──
+window.saveState = async function() {
+  // 先請 Worker 強制存一次
+  if (window.tamaWorker) window.tamaWorker.postMessage('save');
+  await new Promise(r => setTimeout(r, 800));
+
+  const db = await new Promise((res, rej) => {
+    const req = indexedDB.open('TamaDB', 1);
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+  const data = await new Promise((res, rej) => {
+    const req = db.transaction(['states'],'readonly')
+                  .objectStore('states').get('tamaState');
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+  db.close();
+  if (!data) { alert('沒有存檔資料！'); return; }
+
+  // Uint32Array → plain array for JSON
+  const payload = { id: data.id, buffer: Array.from(data.buffer) };
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'tama_save_' + new Date().toISOString().slice(0,16).replace('T','_') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  window.updateBadge('SAVED ✓', '#A5D6A7');
+};
+
+// ── Load: 從 JSON 檔案還原到 IndexedDB ──
+window.loadState = async function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  let payload;
+  try { payload = JSON.parse(text); } catch { alert('檔案格式錯誤'); return; }
+
+  const buffer = new Uint32Array(payload.buffer);
+  const db = await new Promise((res, rej) => {
+    const req = indexedDB.open('TamaDB', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('states', { keyPath: 'id' });
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+  await new Promise((res, rej) => {
+    const req = db.transaction(['states'],'readwrite')
+                  .objectStore('states').put({ id: 'tamaState', buffer });
+    req.onsuccess = () => res();
+    req.onerror   = () => rej(req.error);
+  });
+  db.close();
+  alert('讀取成功！即將重新整理...');
+  location.reload();
+  // reset file input
+  event.target.value = '';
+};
+</script>
+</body>
+</html>
