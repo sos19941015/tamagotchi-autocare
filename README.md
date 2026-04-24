@@ -172,7 +172,7 @@ Tamagotchi 的形態進化並非隨機，而是由「照顧失誤 (Care Mistakes
 本專案的成功建立在以下優秀開源專案的基礎之上：
 
 *   **[tamagotchi-p1-web](https://github.com/tonypan2/tamagotchi-p1-web)**：提供了核心的 WASM 模擬器引擎與基礎框架。
-*   **[Pygotchi](https://github.com/mizofumi0411/pygotchi)**：啟發了自動化照顧邏輯與 CareBot 的行為設計。
+*   **[Pygotchi](https://github.com/almarch/pygotchi)**：啟發了自動化照顧邏輯與 CareBot 的行為設計。
 *   **Google Material Design 3**：提供了現代化且優雅的設計規範。
 
 ---
