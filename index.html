@@ -2,14 +2,28 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8"/>
-  <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
+  <script>
+    // Fix for GitHub Pages subpath deployment
+    if (location.hostname.includes('github.io')) {
+      const base = document.createElement('base');
+      base.href = '/tamagotchi-autocare/';
+      document.head.appendChild(base);
+    }
+  </script>
+  <link rel="icon" type="image/svg+xml" href="./vite.svg"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tamagotchi AutoCare</title>
   <!-- Intercept Worker BEFORE emulator loads to capture tamaWorker reference -->
   <script>
     (function(){
       const _W = window.Worker;
-      window.Worker = function(...a){ const w = new _W(...a); window.tamaWorker = w; return w; };
+      window.Worker = function(...a){
+        // Ensure worker path is relative to base
+        if (typeof a[0] === 'string' && a[0].startsWith('/assets/')) a[0] = '.' + a[0];
+        const w = new _W(...a);
+        window.tamaWorker = w;
+        return w;
+      };
       window.Worker.prototype = _W.prototype;
     })();
   </script>
