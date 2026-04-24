@@ -154,6 +154,12 @@ Tamagotchi 的形態進化並非隨機，而是由「照顧失誤 (Care Mistakes
 4.  **虛弱 (Frail)**：生理（餵食）疏忽較多。
 5.  **倔強 (Stubborn)**：嚴重的生理與心理疏忽。
 
+### 成長進化樹 (Growth Chart)
+了解了上述的 Tiers 後，您可以參考下方的進化樹狀圖。透過精準控制 Care Mistakes 的次數，您可以 100% 決定寵物最終會長成什麼樣子。這也是 Auto Pilot (CareBot) 能確保養出最強型態的秘密！
+
+[![Tamagotchi Growth Chart](https://static.wikia.nocookie.net/tamagotchi/images/c/c5/Tamagrowth_chart.png)](https://tamagotchi.fandom.com/wiki/Care?file=Tamagrowth_chart.png)
+*(點擊圖片可查看原出處與詳細圖解)*
+
 ### 專家提醒：隱藏心形 (Hidden Hearts)
 在某些版本中，即使心形計量表已滿，您仍可以多餵食 2 次正餐。適度的「飽足」能增加寵物對疏忽的耐受力，但過度餵食點心會導致體重飆升甚至生病。
 
