@@ -16,9 +16,9 @@ typography:
     fontSize: "0.85rem"
     lineHeight: "1.5"
   body:
-    fontFamily: "'Outfit', sans-serif"
-    fontSize: "0.95rem"
-    fontWeight: 500
+    fontFamily: "'Press Start 2P', cursive"
+    fontSize: "0.65rem"
+    fontWeight: normal
   label:
     fontFamily: "'Press Start 2P', cursive"
     fontSize: "0.6rem"
@@ -61,8 +61,7 @@ The palette uses bright, playful M3 colors (like deep pinks and light cyans) but
 
 ## Typography
 
-- **Press Start 2P:** Used for headlines, badges, and labels to instantly deliver the retro 8-bit vibe.
-- **Outfit:** Used for body text and numbers to ensure readability without breaking the playful M3 geometry.
+- **Press Start 2P:** Used globally across all headlines, badges, labels, and buttons to instantly deliver an authentic, uninterrupted retro 8-bit vibe. The font size is scaled down (e.g., `0.65rem`) to fit comfortably within modern component constraints.
 
 ## Layout & Spacing
 
